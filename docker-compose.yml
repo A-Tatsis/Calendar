@@ -11,7 +11,7 @@ services:
       - SPRING_DATASOURCE_PASSWORD=postgres
       - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.PostgreSQLDialect
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-      - KEYCLOAK_AUTH_SERVER_URL=http://keycloak:8080/auth
+      - KEYCLOAK_AUTH_SERVER_URL=http://keycloak:8080/
       - KEYCLOAK_REALM=myrealm
       - KEYCLOAK_RESOURCE=myclient
     depends_on:
@@ -60,23 +60,25 @@ services:
       KC_DB_USERNAME: keycloak
       KC_DB_PASSWORD: keycloak
 
-      KC_HOSTNAME: localhost
-      KC_HOSTNAME_PORT: 8080
-      KC_HOSTNAME_STRICT: false
-      KC_HOSTNAME_STRICT_HTTPS: false
+      # KC_HOSTNAME: keycloak
+      # KC_HOSTNAME_PORT: 8080
+      # KC_HOSTNAME_STRICT: false
+      # KC_HOSTNAME_STRICT_HTTPS: false
+      KC_PROXY: edge
 
       KC_LOG_LEVEL: info
       KC_METRICS_ENABLED: true
       KC_HEALTH_ENABLED: true
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
-    command: start-dev
+
+    command: ["start-dev"]
     depends_on:
       - keycloakdb
     ports:
-      - 8080:8080
+      - "8080:8080"
     volumes:
-      - .config/keycloak/realm-export.json:/opt/keycloak/data/import/keycloak-config.json
+      - ./config/keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
 
   nginx:
     build:
