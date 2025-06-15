@@ -1,22 +1,24 @@
 version: '3.8'
 
 services:
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://springdb:5432/appointments
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
-      - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.PostgreSQLDialect
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-      - KEYCLOAK_AUTH_SERVER_URL=http://keycloak:8080/
-      - KEYCLOAK_REALM=myrealm
-      - KEYCLOAK_RESOURCE=myclient
-    depends_on:
-      - springdb
-      - keycloak
+  # backend:
+  #   build:
+  #     context: ./backend
+  #     dockerfile: Dockerfile
+  #   environment:
+  #     - SPRING_DATASOURCE_URL=jdbc:postgresql://springdb:5432/appointments
+  #     - SPRING_DATASOURCE_USERNAME=postgres
+  #     - SPRING_DATASOURCE_PASSWORD=postgres
+  #     - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.PostgreSQLDialect
+  #     - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+  #     - KEYCLOAK_AUTH_SERVER_URL=http://keycloak:8080/
+  #     - KEYCLOAK_REALM=myrealm
+  #     - KEYCLOAK_RESOURCE=myclient
+  #   depends_on:
+  #     - springdb
+  #     - keycloak
+  #   networks:
+  #   - app-network
 
   # frontend:
   #   build:
@@ -37,6 +39,8 @@ services:
       - "5433:5432"
     volumes:
       - ./springdb_data:/var/lib/postgresql/data
+    networks:
+    - app-network
 
   keycloakdb:
     image: postgres:latest
@@ -49,6 +53,8 @@ services:
       - "5434:5432"
     volumes:
       - ./keycloakdb_data:/var/lib/postgresql/data
+    networks:
+    - app-network
 
   keycloak:
     image: quay.io/keycloak/keycloak:23.0.7
@@ -71,7 +77,11 @@ services:
       KC_HEALTH_ENABLED: true
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
-
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     command: ["start-dev"]
     depends_on:
       - keycloakdb
@@ -79,6 +89,8 @@ services:
       - "8080:8080"
     volumes:
       - ./config/keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
+    networks:
+    - app-network
 
   nginx:
     build:
@@ -89,7 +101,13 @@ services:
       - "80:80"
     # depends_on:
     #   - frontend
+    networks:
+      - app-network
 
 volumes:
   springdb_data:
   keycloakdb_data:
+
+networks:
+  app-network:
+    driver: bridge
