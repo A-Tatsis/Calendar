@@ -1,5 +1,6 @@
 package com.api.backend.controler;
 
+import com.api.backend.controler.validators.AppointmentResourceValidator;
 import com.api.backend.models.Appointments;
 import com.api.backend.models.ClosedAppointment;
 import com.api.backend.models.Subscription;
@@ -9,10 +10,12 @@ import com.api.backend.service.AppointmentService;
 import com.api.backend.service.ClosedAppointmentService;
 import com.api.backend.service.SubscriptionService;
 import com.api.backend.service.UserSubscriptionsService;
+import java.security.Principal;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,19 +26,21 @@ import java.util.UUID;
 @RequestMapping("/api")
 public class AppointmentController {
 
-    private AppointmentService appointmentService;
-
-    private SubscriptionService subscriptionService;
-
-    private UserSubscriptionsService userSubscriptionsService;
-
-    private ClosedAppointmentService closedAppointmentService;
+    private final AppointmentService appointmentService;
+    private final SubscriptionService subscriptionService;
+    private final UserSubscriptionsService userSubscriptionsService;
+    private final ClosedAppointmentService closedAppointmentService;
 
     public AppointmentController(AppointmentService appointmentService, SubscriptionService subscriptionService, UserSubscriptionsService userSubscriptionsService, ClosedAppointmentService closedAppointmentService) {
         this.appointmentService = appointmentService;
         this.subscriptionService = subscriptionService;
         this.userSubscriptionsService = userSubscriptionsService;
         this.closedAppointmentService = closedAppointmentService;
+    }
+
+    @InitBinder("request")
+    public void initBinder(WebDataBinder binder) {
+        binder.addValidators(new AppointmentResourceValidator());
     }
 
 //    Get the data from Appointment table
@@ -52,7 +57,7 @@ public class AppointmentController {
 
 //    Add a session generate id, name, date, numberOfUsers, Teacher, Status  -->  Table appointment
     @PostMapping("/appointments")
-    @PreAuthorize("hasRole('client_admin')")
+//    @PreAuthorize("hasRole('client_admin')")
     public ResponseEntity<AppointmentResource> createAppointment(@Validated @RequestBody AppointmentResource request) {
         var newAppointment = appointmentService.createAppointment(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(new AppointmentResource(newAppointment));
