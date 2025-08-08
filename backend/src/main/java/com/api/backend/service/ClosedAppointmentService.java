@@ -54,26 +54,26 @@ public class ClosedAppointmentService {
 
     }
 
-    public Map<Integer, Long> countSpecificAClosedAppointment(UUID id) {
+    public Map<Integer, Integer> countSpecificAClosedAppointment(UUID id) {
         List<Object[]> results = closedAppointmentRepository.countStatusesByAppointment(id);
-        Map<Integer, Long> counts = new HashMap<>();
+        Map<Integer, Integer> counts = new HashMap<>();
 
         for (Object[] result : results) {
             Integer status = (Integer) result[0];
-            Long count = (Long) result[1];
+            Integer count = (Integer) result[1];
             counts.put(status, count);
         }
 
         return counts;
     }
 
-    public Map<Integer, Long> countSpecificUClosedAppointment(UUID id) {
+    public Map<Integer, Integer> countSpecificUClosedAppointment(UUID id) {
         List<Object[]> results = closedAppointmentRepository.countStatusesByUser(id);
-        Map<Integer, Long> counts = new HashMap<>();
+        Map<Integer, Integer> counts = new HashMap<>();
 
         for (Object[] result : results) {
             Integer status = (Integer) result[0];
-            Long count = (Long) result[1];
+            Integer count = (Integer) result[1];
             counts.put(status, count);
         }
 

@@ -8,6 +8,7 @@ import java.util.UUID;
 public class SecurityUtils {
 
     public static UUID getCurrentUserId() {
+        var test = SecurityContextHolder.getContext();
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof Jwt jwt) {
             return UUID.fromString(jwt.getClaimAsString("sub"));

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDate;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -112,4 +113,15 @@ public class Appointments {
         this.waitingNumber = waitingNumber;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Appointments that)) return false;
+        return Objects.equals(id, that.id) && Objects.equals(nameSession, that.nameSession) && Objects.equals(date, that.date) && Objects.equals(number, that.number) && Objects.equals(teacher, that.teacher) && Objects.equals(status, that.status) && Objects.equals(userId, that.userId) && Objects.equals(waitingNumber, that.waitingNumber);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, nameSession, date, number, teacher, status, userId, waitingNumber);
+    }
 }

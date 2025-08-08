@@ -11,6 +11,8 @@ import com.api.backend.service.ClosedAppointmentService;
 import com.api.backend.service.SubscriptionService;
 import com.api.backend.service.UserSubscriptionsService;
 import java.security.Principal;
+
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -183,15 +185,15 @@ public class AppointmentController {
 
 //    Get the number of users that have been in a specific appointment
     @GetMapping("/closedappointment/appointment/{id}/status-counts")
-    public ResponseEntity<Map<Integer, Long>> countSpecificAppointmentClosedAppointment(@PathVariable UUID id) {
-        Map<Integer, Long> counts = closedAppointmentService.countSpecificAClosedAppointment(id);
+    public ResponseEntity<Map<Integer, Integer>> countSpecificAppointmentClosedAppointment(@PathVariable UUID id) {
+        Map<Integer, Integer> counts = closedAppointmentService.countSpecificAClosedAppointment(id);
         return ResponseEntity.ok(counts);
     }
 
 //    Get the number of appointment that a specific user has
     @GetMapping("/closedappointment/user/{id}/status-counts")
-    public ResponseEntity<Map<Integer, Long>> countSpecificUserClosedAppointment(@PathVariable UUID id) {
-        Map<Integer, Long> counts = closedAppointmentService.countSpecificUClosedAppointment(id);
+    public ResponseEntity<Map<Integer, Integer>> countSpecificUserClosedAppointment(@PathVariable UUID id) {
+        Map<Integer, Integer> counts = closedAppointmentService.countSpecificUClosedAppointment(id);
         return ResponseEntity.ok(counts);
     }
 
