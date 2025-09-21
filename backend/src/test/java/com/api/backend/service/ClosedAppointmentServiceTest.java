@@ -16,6 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -140,14 +141,16 @@ public class ClosedAppointmentServiceTest {
 
     @Test
     void createClosedAppointment() {
-        try(MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
+        try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
             utilities.when(SecurityUtils::getCurrentUserId).thenReturn(USER_ID);
 
             when(appointmentRepository.findById(APPOINTMENT_ID)).thenReturn(Optional.of(appointments));
             when(closedAppointmentRepository.countByIdAppointmentAndStatusIn(APPOINTMENT_ID, List.of(1))).thenReturn(10L);
-            when(userSubscriptionsRepository.findTopByIdUserAndStatusOrderByRegisteredDateDesc(USER_ID, 1)).thenReturn(Optional.of(userSubscriptions));
+            when(userSubscriptionsRepository.findTopByIdUserAndStatusOrderByRegisteredDateDesc(USER_ID, 1))
+                    .thenReturn(Optional.of(userSubscriptions));
 
-            when(subscriptionRepository.findById(userSubscriptions.getSubscription())).thenReturn(Optional.of(subscription));
+            when(subscriptionRepository.findById(userSubscriptions.getSubscription()))
+                    .thenReturn(Optional.of(subscription));
             when(subscription.getNumberSessions()).thenReturn(10);
             when(closedAppointmentRepository.countByIdUserAndStatusIn(USER_ID, List.of(1, 2))).thenReturn(9L);
 
@@ -165,13 +168,21 @@ public class ClosedAppointmentServiceTest {
 
             var result = cut.createClosedAppointment(closedAppointmentResource);
 
+            // ✅ Assertions
             assertEquals(closedAppointment, result);
 
-            verify(closedAppointmentRepository, times(1)).save(eq(closedAppointment));
-
-
+            // ✅ Verify interactions
+            verify(closedAppointmentRepository).existsByIdAppointmentAndIdUser(APPOINTMENT_ID, USER_ID);
+            verify(closedAppointmentRepository).existsByIdAppointment(APPOINTMENT_ID);
+            verify(appointmentRepository).findById(APPOINTMENT_ID);
+            verify(closedAppointmentRepository).countByIdAppointmentAndStatusIn(APPOINTMENT_ID, List.of(1));
+            verify(userSubscriptionsRepository).findTopByIdUserAndStatusOrderByRegisteredDateDesc(USER_ID, 1);
+            verify(subscriptionRepository).findById(userSubscriptions.getSubscription());
+            verify(closedAppointmentRepository).countByIdUserAndStatusIn(USER_ID, List.of(1, 2));
+            verify(closedAppointmentRepository).save(any());
         }
     }
+
 
 
 }

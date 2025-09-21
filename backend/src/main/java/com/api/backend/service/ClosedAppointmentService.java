@@ -111,12 +111,12 @@ public class ClosedAppointmentService {
                 throw new RuntimeException("You have reached the maximum number of allowed sessions.");
             }
 
-            ClosedAppointment closedAppointment = new ClosedAppointment();
-            closedAppointment.setIdAppointment(request.idAppointment());
-            closedAppointment.setStatus(request.status());
-            closedAppointment.setIdUser(idUser);
-            closedAppointment.setRegisteredDate(LocalDateTime.now());
-            return closedAppointmentRepository.save(closedAppointment);
+//            ClosedAppointment closedAppointment = new ClosedAppointment();
+//            closedAppointment.setIdAppointment(request.idAppointment());
+//            closedAppointment.setStatus(request.status());
+//            closedAppointment.setIdUser(idUser);
+//            closedAppointment.setRegisteredDate(LocalDateTime.now());
+//            return closedAppointmentRepository.save(closedAppointment);
         }
 
         ClosedAppointment closedAppointment = new ClosedAppointment();
